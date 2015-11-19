@@ -4,6 +4,7 @@ function initialize(){
   $('form').on('submit', submitForm);
   $('.logout-link').on('click', logout);
   $('.users-link').on('click', users);
+  $('.login-link, .register-link, .users-link').on('click', showPage);
   checkLoginState();
 }
 
@@ -16,6 +17,10 @@ function checkLoginState(){
 }
 
 function showPage(){
+  event.preventDefault();
+  var linkClass = $(this).attr("class").split("-")[0];
+  $("section").hide();
+  return $("#"+linkClass).show();
 }
 
 function submitForm(){
@@ -30,23 +35,37 @@ function submitForm(){
 
 function users(){
   event.preventDefault();
-  getUsers();
-  ajaxRequest("get", "http://localhost:3000/api/users", null, displayUsers);
+  return getUsers();
 }
 
 function logout(){
   event.preventDefault();
   removeToken();
+  checkLoginState();
 }
 
 function getUsers(){
+  ajaxRequest("get", "http://localhost:3000/api/users", null, displayUsers);
 }
 
 function displayUsers(data){
+  return $.each(data.users, function(index, user) {
+    $(".users").prepend('<div class="media">' +
+      '<div class="media-left">' +
+      '<a href="#">' +
+      '<img class="media-object" src="' + user.local.image +'">' +
+      '</a>' +
+      '</div>' +
+      '<div class="media-body">' +
+      '<h4 class="media-heading">@' + user.local.username + '</h4>' +
+      '<p>' + user.local.fullname + '</p>'+
+      '</div>' +
+      '</div>');
+  });
 }
 
 function hideUsers(){
-  $('#users').hide();
+  return $('#users').empty();
 }
 
 function hideErrors(){
@@ -63,10 +82,13 @@ function loggedInState(){
 
 function loggedOutState(){
   $('section, .logged-in').hide();
+  $('#register, .logged-out').show();
+  return hideUsers();
 }
 
 function authenticationSuccessful(data){
   if (data.token) setToken(data.token);
+  checkLoginState();
 }
 
 function setToken(token){
