@@ -121,6 +121,6 @@ function ajaxRequest(method, url, data, callback){
   }).done(function(data){
     if(callback) callback(data)
   }).fail(function(data){
-    console.log(data.responseJSON.message);
+    displayErrors(data.responseJSON.message);
   });
 }
