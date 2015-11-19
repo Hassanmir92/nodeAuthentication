@@ -2,6 +2,13 @@ $(initialize);
 
 function initialize(){
   $('form').on('submit', submitForm);
+  $('.users-link').on('click', users);
+}
+
+function checkLoginState(){
+}
+
+function showPage(){
 }
 
 function submitForm(){
@@ -14,21 +21,65 @@ function submitForm(){
   return ajaxRequest(method, url, data)
 }
 
-function authenticationSuccessful(data) {
+function users(){
+  event.preventDefault();
+  ajaxRequest("get", "http://localhost:3000/api/users", null);
+}
+
+function logout(){
+}
+
+function getUsers(){
+}
+
+function displayUsers(data){
+}
+
+function hideUsers(){
+}
+
+function hideErrors(){
+}
+
+function displayErrors(data){
+}
+
+function loggedInState(){
+}
+
+function loggedOutState(){
+}
+
+function authenticationSuccessful(data){
   if (data.token) setToken(data.token);
 }
 
-function setToken(token) {
+function setToken(token){
   return window.localStorage.setItem("token", token);
 }
 
-function ajaxRequest(method, url, data, callback) {
+function getToken(){
+  return localStorage.getItem('token');
+}
+
+function removeToken(){
+}
+
+function setRequestHeader(xhr, settings){
+  var token = getToken();
+  if(token) return xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+}
+
+function ajaxRequest(method, url, data, callback){
   $.ajax({
     method: method,
     url: url,
-    data: data
+    data: data,
+    beforeSend: setRequestHeader
   }).done(function(data){
     console.log(data);
     authenticationSuccessful(data);
+  }).fail(function(data){
+    console.log(data.responseJSON.message);
   });
 }
