@@ -2,6 +2,7 @@ $(initialize);
 
 function initialize(){
   $('form').on('submit', submitForm);
+  $('.logout-link').on('click', logout);
   $('.users-link').on('click', users);
 }
 
@@ -27,6 +28,8 @@ function users(){
 }
 
 function logout(){
+  event.preventDefault();
+  removeToken();
 }
 
 function getUsers(){
@@ -63,6 +66,7 @@ function getToken(){
 }
 
 function removeToken(){
+  return localStorage.clear();
 }
 
 function setRequestHeader(xhr, settings){
