@@ -19,6 +19,7 @@ function checkLoginState(){
 function showPage(){
   event.preventDefault();
   var linkClass = $(this).attr("class").split("-")[0];
+  hideErrors();
   $("section").hide();
   return $("#"+linkClass).show();
 }
@@ -49,6 +50,7 @@ function getUsers(){
 }
 
 function displayUsers(data){
+  hideErrors();
   return $.each(data.users, function(index, user) {
     $(".users").prepend('<div class="media">' +
       '<div class="media-left">' +
@@ -69,9 +71,11 @@ function hideUsers(){
 }
 
 function hideErrors(){
+  return $('.alert').removeClass("show").addClass("hide") 
 }
 
 function displayErrors(data){
+  return $('.alert').text(data).removeClass("hide").addClass("show") 
 }
 
 function loggedInState(){
@@ -88,7 +92,7 @@ function loggedOutState(){
 
 function authenticationSuccessful(data){
   if (data.token) setToken(data.token);
-  checkLoginState();
+  return checkLoginState();
 }
 
 function setToken(token){
@@ -115,7 +119,7 @@ function ajaxRequest(method, url, data, callback){
     data: data,
     beforeSend: setRequestHeader
   }).done(function(data){
-    callback(data)
+    if(callback) callback(data)
   }).fail(function(data){
     console.log(data.responseJSON.message);
   });
