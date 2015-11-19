@@ -4,9 +4,15 @@ function initialize(){
   $('form').on('submit', submitForm);
   $('.logout-link').on('click', logout);
   $('.users-link').on('click', users);
+  checkLoginState();
 }
 
 function checkLoginState(){
+  if(getToken()){
+    return loggedInState();
+  }else{
+    return loggedOutState();
+  }
 }
 
 function showPage(){
@@ -19,12 +25,13 @@ function submitForm(){
   var url    = "http://localhost:3000/api"+ $(this).attr("action");
   var data   = $(this).serialize();
 
-  return ajaxRequest(method, url, data)
+  return ajaxRequest(method, url, data, authenticationSuccessful)
 }
 
 function users(){
   event.preventDefault();
-  ajaxRequest("get", "http://localhost:3000/api/users", null);
+  getUsers();
+  ajaxRequest("get", "http://localhost:3000/api/users", null, displayUsers);
 }
 
 function logout(){
@@ -39,6 +46,7 @@ function displayUsers(data){
 }
 
 function hideUsers(){
+  $('#users').hide();
 }
 
 function hideErrors(){
@@ -48,9 +56,13 @@ function displayErrors(data){
 }
 
 function loggedInState(){
+  $('section, .logged-out').hide();
+  $('#users, .logged-in').show();
+  return getUsers();
 }
 
 function loggedOutState(){
+  $('section, .logged-in').hide();
 }
 
 function authenticationSuccessful(data){
@@ -81,8 +93,7 @@ function ajaxRequest(method, url, data, callback){
     data: data,
     beforeSend: setRequestHeader
   }).done(function(data){
-    console.log(data);
-    authenticationSuccessful(data);
+    callback(data)
   }).fail(function(data){
     console.log(data.responseJSON.message);
   });
